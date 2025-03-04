@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from tinycmax.blocks import conv_encoder, LazyConvGru, upsample_decoder
+from tinycmax.blocks import conv_encoder, conv_encoder_simple, LazyConvGru, upsample_decoder
 from tinycmax.network_utils import NetworkWrapper
 
 
@@ -25,7 +25,8 @@ class FlowNetwork(nn.Module):
 
         self.scaling = scaling
 
-        self.encoder = conv_encoder(encoder_channels, activation_fn, padding_mode=padding_mode)
+        # self.encoder = conv_encoder(encoder_channels, activation_fn, padding_mode=padding_mode)
+        self.encoder = conv_encoder_simple(encoder_channels, activation_fn, padding_mode=padding_mode)
         self.memory = LazyConvGru(memory_channels, 3, padding_mode=padding_mode)
         self.decoder = upsample_decoder(
             decoder_channels, activation_fn, final_bias, padding_mode=padding_mode, mode=self.mode

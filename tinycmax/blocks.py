@@ -164,6 +164,29 @@ def conv_encoder(out_channels, activation_fn, padding_mode="zeros"):
     return named_sequential("enc", padder, head, encoder)
 
 
+def conv_encoder_simple(out_channels, activation_fn, padding_mode="zeros"):
+    """
+    Same but no residuals.
+    """
+    padder = LazyPadder(8)
+    head = feedforward(
+        nn.LazyConv2d(out_channels // 4, 7, stride=2, padding=3, padding_mode=padding_mode),
+        activation_fn(),
+    )
+    encoder = named_sequential(
+        "conv",
+        feedforward(
+            nn.LazyConv2d(out_channels // 2, 3, stride=2, padding=1, padding_mode=padding_mode),
+            activation_fn(),
+        ),
+        feedforward(
+            nn.LazyConv2d(out_channels, 3, stride=2, padding=1, padding_mode=padding_mode),
+            activation_fn(),
+        ),
+    )
+    return named_sequential("enc", padder, head, encoder)
+
+
 def upsample_decoder(out_channels, activation_fn, final_bias, padding_mode="zeros", mode="flow"):
     """
     Select between flow (2-channel, identity)
